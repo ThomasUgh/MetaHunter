@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import FileUpload from './components/FileUpload'
 import MetadataView from './components/MetadataView'
+import GpsMap from './components/GpsMap'
 
 function App() {
   const [metadata, setMetadata] = useState(null)
@@ -15,12 +16,13 @@ function App() {
   }
 
   const handlePreview = (url) => {
-    // cleanup old preview URL
     if (preview) {
       URL.revokeObjectURL(preview)
     }
     setPreview(url)
   }
+
+  const hasGps = metadata?.gps?.latitude && metadata?.gps?.longitude
 
   return (
     <div className="min-h-screen p-8">
@@ -31,22 +33,31 @@ function App() {
         <FileUpload onMetadata={handleMetadata} onPreview={handlePreview} />
         
         {metadata && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {preview && (
-              <div className="lg:col-span-1">
-                <div className="bg-gray-900 rounded-lg p-4">
-                  <img 
-                    src={preview} 
-                    alt="Preview" 
-                    className="w-full h-auto rounded max-h-80 object-contain bg-gray-800"
-                  />
-                </div>
+          <div className="space-y-6">
+            {(preview || hasGps) && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {preview && (
+                  <div className="bg-gray-900 rounded-lg p-4">
+                    <img 
+                      src={preview} 
+                      alt="Preview" 
+                      className="w-full h-auto rounded max-h-64 object-contain bg-gray-800"
+                    />
+                  </div>
+                )}
+                {hasGps && (
+                  <div>
+                    <GpsMap 
+                      latitude={metadata.gps.latitude}
+                      longitude={metadata.gps.longitude}
+                      altitude={metadata.gps.altitude}
+                    />
+                  </div>
+                )}
               </div>
             )}
             
-            <div className={preview ? 'lg:col-span-2' : 'lg:col-span-3'}>
-              <MetadataView data={metadata} fileName={fileName} fileType={fileType} />
-            </div>
+            <MetadataView data={metadata} fileName={fileName} fileType={fileType} />
           </div>
         )}
       </div>
