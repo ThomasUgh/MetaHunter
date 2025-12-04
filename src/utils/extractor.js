@@ -1,22 +1,77 @@
 import exifr from 'exifr'
+import { PDFDocument } from 'pdf-lib'
 
 export async function extractMetadata(file) {
   const type = file.type
+  const ext = file.name.split('.').pop()?.toLowerCase()
 
-  // for now only images
   if (type.startsWith('image/')) {
     return extractImageMetadata(file)
   }
 
-  // TODO: add more file types
+  if (type === 'application/pdf' || ext === 'pdf') {
+    return extractPdfMetadata(file)
+  }
+
+  // fallback - just basic info
   return { 
     fileInfo: {
       name: file.name,
-      size: file.size,
+      size: formatFileSize(file.size),
       type: file.type,
       lastModified: new Date(file.lastModified)
     },
     note: 'File type not fully supported yet'
+  }
+}
+
+async function extractPdfMetadata(file) {
+  const basicInfo = {
+    name: file.name,
+    size: formatFileSize(file.size),
+    type: 'application/pdf',
+    lastModified: new Date(file.lastModified)
+  }
+
+  try {
+    const arrayBuffer = await file.arrayBuffer()
+    const pdf = await PDFDocument.load(arrayBuffer, { 
+      ignoreEncryption: true,
+      updateMetadata: false 
+    })
+
+    const result = {
+      fileInfo: basicInfo,
+      document: {
+        title: pdf.getTitle(),
+        author: pdf.getAuthor(),
+        subject: pdf.getSubject(),
+        creator: pdf.getCreator(),
+        producer: pdf.getProducer(),
+        keywords: pdf.getKeywords(),
+      },
+      properties: {
+        pageCount: pdf.getPageCount(),
+        creationDate: pdf.getCreationDate(),
+        modificationDate: pdf.getModificationDate(),
+      }
+    }
+
+    // get page dimensions from first page
+    const firstPage = pdf.getPage(0)
+    if (firstPage) {
+      const { width, height } = firstPage.getSize()
+      result.properties.pageSize = `${Math.round(width)} x ${Math.round(height)} pts`
+    }
+
+    return result
+
+  } catch (err) {
+    console.error('PDF parsing failed:', err)
+    return {
+      fileInfo: basicInfo,
+      error: 'Could not parse PDF: ' + err.message
+    }
   }
 }
 
@@ -29,13 +84,11 @@ async function extractImageMetadata(file) {
   }
 
   try {
-    // extract all available exif data
     const exif = await exifr.parse(file, {
-      // get everything we can
       tiff: true,
       exif: true,
       gps: true,
-      ifd1: true, // thumbnail info
+      ifd1: true,
       interop: true,
       iptc: true,
       xmp: true,
@@ -45,12 +98,10 @@ async function extractImageMetadata(file) {
       return { fileInfo: basicInfo, note: 'No EXIF data found' }
     }
 
-    // organize the data a bit
     const result = {
       fileInfo: basicInfo,
     }
 
-    // camera info
     if (exif.Make || exif.Model) {
       result.camera = {
         make: exif.Make,
@@ -59,7 +110,6 @@ async function extractImageMetadata(file) {
       }
     }
 
-    // image settings
     if (exif.ExposureTime || exif.FNumber || exif.ISO) {
       result.settings = {
         exposureTime: exif.ExposureTime ? `1/${Math.round(1/exif.ExposureTime)}s` : null,
@@ -70,7 +120,6 @@ async function extractImageMetadata(file) {
       }
     }
 
-    // dates
     if (exif.DateTimeOriginal || exif.CreateDate) {
       result.dates = {
         taken: exif.DateTimeOriginal,
@@ -79,7 +128,6 @@ async function extractImageMetadata(file) {
       }
     }
 
-    // gps
     if (exif.latitude && exif.longitude) {
       result.gps = {
         latitude: exif.latitude,
@@ -88,7 +136,6 @@ async function extractImageMetadata(file) {
       }
     }
 
-    // image dimensions
     if (exif.ImageWidth || exif.ExifImageWidth) {
       result.dimensions = {
         width: exif.ImageWidth || exif.ExifImageWidth,
