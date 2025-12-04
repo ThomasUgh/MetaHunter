@@ -1,19 +1,28 @@
 # MetaHunter
 
-A simple metadata extraction tool for images.
+A metadata extraction tool for images and PDFs.
 
 ## Features
 
 - Extract EXIF data from images (JPEG, PNG, TIFF, WebP)
-- View camera info, settings, dates, GPS coordinates
+- Extract PDF metadata (author, dates, page count)
+- Image preview
+- Drag & drop support
 - Clean dark interface
+
+## Getting Started
+
+```bash
+npm install
+npm run dev
+```
 
 ## Tech Stack
 
 - React + Vite
 - Tailwind CSS
-- exifr
+- exifr, pdf-lib
 
 ---
 
-v0.1.0
+v0.2.0
