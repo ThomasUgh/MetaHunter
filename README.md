@@ -1,10 +1,10 @@
 # MetaHunter
 
-A metadata extraction tool for multiple file types.
+A metadata extraction tool with GPS map visualization.
 
 ## Features
 
-- Images: EXIF, GPS, camera info
+- Images: EXIF, GPS coordinates with interactive map
 - PDF: author, dates, page count
 - Office: DOCX, XLSX, PPTX metadata
 - Audio: ID3 tags, album art
@@ -19,4 +19,4 @@ npm run dev
 
 ---
 
-v0.3.0
+v0.4.0
