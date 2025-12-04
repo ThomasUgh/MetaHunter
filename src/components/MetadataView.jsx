@@ -7,14 +7,17 @@ function MetadataView({ data, fileName, fileType }) {
     )
   }
 
-  // get icon based on file type
   const getIcon = () => {
     if (fileType?.startsWith('image/')) return '🖼️'
-    if (fileType === 'application/pdf') return '📄'
+    if (fileType === 'application/pdf' || fileType === 'PDF') return '📄'
+    if (fileType?.includes('word') || fileType === 'DOCX') return '📝'
+    if (fileType?.includes('sheet') || fileType === 'XLSX') return '📊'
+    if (fileType?.includes('presentation') || fileType === 'PPTX') return '📽️'
+    if (fileType?.startsWith('audio/')) return '🎵'
+    if (fileType?.startsWith('video/')) return '🎬'
     return '📁'
   }
 
-  // organize data into sections
   const sections = []
   
   for (const [key, value] of Object.entries(data)) {
@@ -33,7 +36,6 @@ function MetadataView({ data, fileName, fileType }) {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
       <div className="bg-gray-900 rounded-lg px-4 py-3 flex items-center gap-3">
         <span className="text-2xl">{getIcon()}</span>
         <div>
@@ -42,7 +44,6 @@ function MetadataView({ data, fileName, fileType }) {
         </div>
       </div>
 
-      {/* Sections */}
       {sections.map((section, i) => (
         <div key={i} className="bg-gray-900 rounded-lg overflow-hidden">
           <div className="px-4 py-2 bg-gray-800/50 border-b border-gray-800">
@@ -77,11 +78,7 @@ function formatValue(val) {
 }
 
 function formatTitle(str) {
-  // camelCase to Title Case
-  return str
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/^./, s => s.toUpperCase())
-    .trim()
+  return str.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase()).trim()
 }
 
 export default MetadataView

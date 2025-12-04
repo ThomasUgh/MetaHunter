@@ -74,7 +74,7 @@ function FileUpload({ onMetadata, onPreview }) {
               {isDragging ? 'Drop file here' : 'Click or drag a file here'}
             </p>
             <p className="text-sm text-gray-500 mt-2">
-              Supports: Images (JPEG, PNG, TIFF, WebP) • PDF
+              Images • PDF • Office (DOCX, XLSX, PPTX) • Audio • Video
             </p>
           </>
         )}
@@ -83,7 +83,7 @@ function FileUpload({ onMetadata, onPreview }) {
         ref={inputRef}
         type="file" 
         onChange={handleFile}
-        accept="image/*,.pdf"
+        accept="image/*,.pdf,.docx,.xlsx,.pptx,audio/*,video/*"
         className="hidden"
       />
     </div>
