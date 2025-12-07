@@ -1,6 +1,6 @@
 # MetaHunter
 
-A metadata extraction tool with GPS map visualization.
+A metadata extraction tool with GPS map visualization and more.
 
 ## Features
 
