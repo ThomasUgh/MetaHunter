@@ -1,14 +1,13 @@
 # MetaHunter
 
-A metadata extraction tool with GPS map visualization and more.
+A metadata extraction tool with dark cyber theme.
 
 ## Features
 
-- Images: EXIF, GPS coordinates with interactive map
-- PDF: author, dates, page count
-- Office: DOCX, XLSX, PPTX metadata
-- Audio: ID3 tags, album art
-- Video: container metadata
+- Dark cyber theme with animations
+- Images: EXIF, GPS with interactive map
+- PDF, Office, Audio, Video metadata
+- Drag & drop support
 
 ## Getting Started
 
@@ -19,4 +18,4 @@ npm run dev
 
 ---
 
-v0.4.0
+v0.5.0
