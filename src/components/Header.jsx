@@ -19,7 +19,7 @@ function Header() {
       
       <div className="inline-flex items-center gap-2 text-xs">
         <span className="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-          v0.5.0
+          v0.6.0
         </span>
         <span className="text-gray-600">•</span>
         <span className="text-gray-500">Images • PDF • Office • Audio • Video</span>

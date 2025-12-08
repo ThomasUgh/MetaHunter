@@ -1,13 +1,14 @@
 # MetaHunter
 
-A metadata extraction tool with dark cyber theme.
+A metadata extraction tool with export and batch processing.
 
 ## Features
 
-- Dark cyber theme with animations
-- Images: EXIF, GPS with interactive map
-- PDF, Office, Audio, Video metadata
-- Drag & drop support
+- Export to JSON, CSV, TXT
+- Batch processing for multiple files
+- Dark cyber theme
+- GPS map visualization
+- All file types supported
 
 ## Getting Started
 
@@ -18,4 +19,4 @@ npm run dev
 
 ---
 
-v0.5.0
+v0.6.0
