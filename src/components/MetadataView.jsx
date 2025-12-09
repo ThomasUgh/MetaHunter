@@ -1,4 +1,8 @@
+import { useI18n } from '../i18n'
+
 function MetadataView({ data, fileName, fileType }) {
+  const { t } = useI18n()
+
   if (data.error) {
     return (
       <div className="bg-red-900/20 border border-red-800/50 rounded-xl p-4 animate-fade-in">
@@ -9,7 +13,7 @@ function MetadataView({ data, fileName, fileType }) {
             </svg>
           </div>
           <div>
-            <p className="font-medium text-red-400">Extraction Failed</p>
+            <p className="font-medium text-red-400">{t('metadata.error')}</p>
             <p className="text-sm text-red-400/70">{data.error}</p>
           </div>
         </div>
@@ -29,15 +33,28 @@ function MetadataView({ data, fileName, fileType }) {
   }
 
   const getSectionIcon = (title) => {
-    const icons = { 'File Info': '📁', 'Camera': '📷', 'Settings': '⚙️', 'Dates': '📅', 'Gps': '📍', 'Dimensions': '📐', 'Document': '📄', 'Properties': '🔧', 'Application': '💻', 'Statistics': '📊', 'Format': '🎵', 'Tags': '🏷️', 'Album Art': '🎨' }
+    const icons = {
+      fileInfo: '📁', camera: '📷', settings: '⚙️', dates: '📅',
+      gps: '📍', dimensions: '📐', document: '📄', properties: '🔧',
+      application: '💻', statistics: '📊', format: '🎵', tags: '🏷️', albumArt: '🎨',
+    }
     return icons[title] || '📋'
   }
 
   const sections = []
+  
   for (const [key, value] of Object.entries(data)) {
-    if (key === 'note' || value === null || value === undefined || typeof value !== 'object') continue
-    const entries = Object.entries(value).filter(([, v]) => v !== null && v !== undefined && v !== '').map(([k, v]) => ({ key: k, value: formatValue(v) }))
-    if (entries.length > 0) sections.push({ title: formatTitle(key), entries })
+    if (key === 'note') continue
+    if (value === null || value === undefined) continue
+    if (typeof value !== 'object') continue
+    
+    const entries = Object.entries(value)
+      .filter(([, v]) => v !== null && v !== undefined && v !== '')
+      .map(([k, v]) => ({ key: k, value: formatValue(v) }))
+    
+    if (entries.length > 0) {
+      sections.push({ id: key, title: t(`sections.${key}`) || formatTitle(key), entries })
+    }
   }
 
   return (
@@ -49,16 +66,19 @@ function MetadataView({ data, fileName, fileType }) {
           {data.note && <p className="text-sm text-gray-500">{data.note}</p>}
         </div>
         <div className="text-right">
-          <div className="text-xs text-gray-500">Sections</div>
+          <div className="text-xs text-gray-500">{t('metadata.sections')}</div>
           <div className="text-lg font-semibold text-cyan-400">{sections.length}</div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {sections.map((section, i) => (
-          <div key={i} className="bg-[var(--bg-secondary)] rounded-xl overflow-hidden border border-[var(--border)] hover:border-cyan-500/30 transition-colors">
+          <div 
+            key={i} 
+            className="bg-[var(--bg-secondary)] rounded-xl overflow-hidden border border-[var(--border)] hover:border-cyan-500/30 transition-colors"
+          >
             <div className="px-4 py-3 bg-[var(--bg-tertiary)] border-b border-[var(--border)] flex items-center gap-2">
-              <span>{getSectionIcon(section.title)}</span>
+              <span>{getSectionIcon(section.id)}</span>
               <h3 className="text-sm font-medium text-gray-300">{section.title}</h3>
               <span className="ml-auto text-xs text-gray-600">{section.entries.length}</span>
             </div>
@@ -76,7 +96,7 @@ function MetadataView({ data, fileName, fileType }) {
 
       {sections.length === 0 && (
         <div className="bg-[var(--bg-secondary)] rounded-xl p-8 text-center border border-[var(--border)]">
-          <p className="text-gray-500">No metadata found in this file</p>
+          <p className="text-gray-500">{t('metadata.noMetadata')}</p>
         </div>
       )}
     </div>
