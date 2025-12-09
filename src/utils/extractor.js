@@ -132,10 +132,16 @@ async function extractAudioMetadata(file) {
     const arrayBuffer = await file.arrayBuffer()
     const uint8 = new Uint8Array(arrayBuffer)
     
-    const metadata = await mm.parseBuffer(uint8, file.type, { duration: true, skipCovers: false })
+    const metadata = await mm.parseBuffer(uint8, file.type, {
+      duration: true,
+      skipCovers: false,
+    })
 
-    const result = { fileInfo: basicInfo }
+    const result = {
+      fileInfo: basicInfo,
+    }
 
+    // format info
     if (metadata.format) {
       result.format = {
         container: metadata.format.container,
@@ -173,7 +179,11 @@ async function extractAudioMetadata(file) {
     return result
 
   } catch (err) {
-    return { fileInfo: basicInfo, error: 'Could not parse audio metadata: ' + err.message }
+    console.error('Audio parsing failed:', err)
+    return {
+      fileInfo: basicInfo,
+      error: 'Could not parse audio metadata: ' + err.message
+    }
   }
 }
 
@@ -193,7 +203,10 @@ async function extractPdfMetadata(file) {
 
   try {
     const arrayBuffer = await file.arrayBuffer()
-    const pdf = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true, updateMetadata: false })
+    const pdf = await PDFDocument.load(arrayBuffer, { 
+      ignoreEncryption: true,
+      updateMetadata: false 
+    })
 
     const result = {
       fileInfo: basicInfo,
@@ -221,7 +234,11 @@ async function extractPdfMetadata(file) {
     return result
 
   } catch (err) {
-    return { fileInfo: basicInfo, error: 'Could not parse PDF: ' + err.message }
+    console.error('PDF parsing failed:', err)
+    return {
+      fileInfo: basicInfo,
+      error: 'Could not parse PDF: ' + err.message
+    }
   }
 }
 
@@ -234,14 +251,30 @@ async function extractImageMetadata(file) {
   }
 
   try {
-    const exif = await exifr.parse(file, { tiff: true, exif: true, gps: true, ifd1: true, interop: true, iptc: true, xmp: true })
+    const exif = await exifr.parse(file, {
+      tiff: true,
+      exif: true,
+      gps: true,
+      ifd1: true,
+      interop: true,
+      iptc: true,
+      xmp: true,
+    })
 
-    if (!exif) return { fileInfo: basicInfo, note: 'No EXIF data found' }
+    if (!exif) {
+      return { fileInfo: basicInfo, note: 'No EXIF data found' }
+    }
 
-    const result = { fileInfo: basicInfo }
+    const result = {
+      fileInfo: basicInfo,
+    }
 
     if (exif.Make || exif.Model) {
-      result.camera = { make: exif.Make, model: exif.Model, software: exif.Software }
+      result.camera = {
+        make: exif.Make,
+        model: exif.Model,
+        software: exif.Software,
+      }
     }
 
     if (exif.ExposureTime || exif.FNumber || exif.ISO) {
@@ -255,11 +288,19 @@ async function extractImageMetadata(file) {
     }
 
     if (exif.DateTimeOriginal || exif.CreateDate) {
-      result.dates = { taken: exif.DateTimeOriginal, created: exif.CreateDate, modified: exif.ModifyDate }
+      result.dates = {
+        taken: exif.DateTimeOriginal,
+        created: exif.CreateDate,
+        modified: exif.ModifyDate,
+      }
     }
 
     if (exif.latitude && exif.longitude) {
-      result.gps = { latitude: exif.latitude, longitude: exif.longitude, altitude: exif.GPSAltitude }
+      result.gps = {
+        latitude: exif.latitude,
+        longitude: exif.longitude,
+        altitude: exif.GPSAltitude,
+      }
     }
 
     if (exif.ImageWidth || exif.ExifImageWidth) {
@@ -273,7 +314,11 @@ async function extractImageMetadata(file) {
     return result
 
   } catch (err) {
-    return { fileInfo: basicInfo, error: 'Could not parse EXIF data' }
+    console.error('EXIF extraction failed:', err)
+    return { 
+      fileInfo: basicInfo, 
+      error: 'Could not parse EXIF data' 
+    }
   }
 }
 
